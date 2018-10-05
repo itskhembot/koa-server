@@ -2,15 +2,23 @@ import AccountModel from '../models/account';
 import ReservedBalanceModel from '../models/reserved-balance';
 import VirtualBalanceModel from '../models/virtual-balance';
 
-export default{
-  account: async (...args: any[]) => (
-    AccountModel.findOne({ where: { id: (<any>Object).values(args[1]) } })),
-  reservedBalance: async (...args: any[]) => (
-    ReservedBalanceModel.findOne({ where: { id: (<any>Object).values(args[1]) } })),
-  reservedBalances: async (...args: any[]) => (
-    ReservedBalanceModel.findAll({ where: { account: (<any>Object).values(args[1]) } })),
-    virtualBalance: async (...args: any[]) => (
-      VirtualBalanceModel.findOne({ where: { id: (<any>Object).values(args[1]) } })),
-    virtualBalances: async (...args: any[]) => (
-      VirtualBalanceModel.findAll({ where: { account: (<any>Object).values(args[1]) } })),
-}
+export default {
+  account: async (obj: any, args: { id: string }) =>
+    AccountModel.findOne({ where: { id: args.id } }),
+  reservedBalance: async (obj: any, args: { id: string }) =>
+    ReservedBalanceModel.findOne({
+      where: { id: args.id },
+    }),
+  reservedBalances: async (obj: any, args: { id: string }) =>
+    ReservedBalanceModel.findAll({
+      where: { account: args.id },
+    }),
+  virtualBalance: async (obj: any, args: { id: string }) =>
+    VirtualBalanceModel.findOne({
+      where: { id: args.id },
+    }),
+  virtualBalances: async (obj: any, args: { id: string }) =>
+    VirtualBalanceModel.findAll({
+      where: { account: args.id },
+    }),
+};

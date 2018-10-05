@@ -15,7 +15,7 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedParameters": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
     "lib": ["es2017", "esnext"]
