@@ -2,11 +2,10 @@ import sequelize from '../lib/sequelize';
 
 const VirtualBalanceModel = sequelize.define('VirtualBalance', {
   id: {
-    type: sequelize.Sequelize.INTEGER,
+    type: sequelize.Sequelize.STRING,
     primaryKey: true,
-    autoIncrement: true,
   },
-  account: sequelize.Sequelize.INTEGER,
+  account: sequelize.Sequelize.STRING,
   context: sequelize.Sequelize.STRING,
   balance: sequelize.Sequelize.DOUBLE,
   isCommit: sequelize.Sequelize.BOOLEAN,

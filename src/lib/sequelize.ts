@@ -1,6 +1,6 @@
 import Sequelize from 'sequelize';
 
-export default new Sequelize('balance', 'postgres', 'yuadnat', {
+export default new Sequelize('balance3', 'postgres', 'yuadnat', {
   host: 'localhost',
   dialect: 'postgres',
   operatorsAliases: false,

@@ -2,11 +2,10 @@ import sequelize from '../lib/sequelize';
 
 const ReservedBalanceModel = sequelize.define('ReservedBalance', {
   id: {
-    type: sequelize.Sequelize.INTEGER,
+    type: sequelize.Sequelize.STRING,
     primaryKey: true,
-    autoIncrement: true,
   },
-  account: sequelize.Sequelize.INTEGER,
+  account: sequelize.Sequelize.STRING,
   context: sequelize.Sequelize.STRING,
   balance: sequelize.Sequelize.DOUBLE,
   isReleased: sequelize.Sequelize.BOOLEAN,

@@ -2,9 +2,8 @@ import sequelize from '../lib/sequelize';
 
 const AccountModel = sequelize.define('Account', {
   id: {
-    type: sequelize.Sequelize.INTEGER,
+    type: sequelize.Sequelize.STRING,
     primaryKey: true,
-    autoIncrement: true,
   },
   balance: sequelize.Sequelize.DOUBLE,
   availableBalance: sequelize.Sequelize.DOUBLE,

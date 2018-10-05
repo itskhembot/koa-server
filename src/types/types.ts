@@ -28,6 +28,7 @@ type Request {
 }
 
 type Query {
+  hello(id: ID!): String!
   account(id: ID!): Account
   reservedBalance(id: ID!): ReservedBalance
   virtualBalance(id: ID!): VirtualBalance
