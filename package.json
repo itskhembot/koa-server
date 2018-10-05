@@ -1,0 +1,26 @@
+{
+  "name": "koa-server",
+  "version": "0.0.1",
+  "description": "Koa server example",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "start": "node build/index.js"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server-koa": "^2.1.0",
+    "graphql": "^14.0.2",
+    "graphql-tools": "^4.0.0",
+    "koa": "^2.5.3",
+    "pg": "^7.5.0",
+    "pg-hstore": "^2.3.2",
+    "sequelize": "^4.39.0"
+  },
+  "devDependencies": {
+    "@types/graphql": "^14.0.1",
+    "@types/koa": "^2.0.46",
+    "@types/sequelize": "^4.27.27",
+    "typescript": "^3.1.1"
+  }
+}
