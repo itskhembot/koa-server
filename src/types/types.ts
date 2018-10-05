@@ -9,14 +9,14 @@ export default gql`
 
 type ReservedBalance {
   id: ID!
-  account: Int!
+  account: String!
   context: String!
   balance: Float!
 }
 
 type VirtualBalance {
   id: ID!
-  account: Int!
+  account: String!
   context: String!
   balance: Float!
 }
@@ -28,7 +28,6 @@ type Request {
 }
 
 type Query {
-  hello(id: ID!): String!
   account(id: ID!): Account
   reservedBalance(id: ID!): ReservedBalance
   virtualBalance(id: ID!): VirtualBalance
