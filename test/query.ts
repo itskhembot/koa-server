@@ -1,6 +1,6 @@
 import supertest from 'supertest';
-import test, { describe, beforeEach, it, afterEach } from 'mocha';
-import { start, stop } from '../src/index';
+import { describe, beforeEach, it, afterEach } from 'mocha';
+import { start, stop } from '../src';
 import AccountModel from '../src/models/account';
 
 let superserver;
