@@ -17,9 +17,8 @@ server.applyMiddleware({
 let apollorun: any;
 
 export async function start(port: number) {
-  apollorun = await app.listen({ port }, () =>
-    console.log(`ðŸš€ Server ready at http://localhost:${port}${server.graphqlPath}`),
-  );
+  apollorun = app.listen(port);
+  return apollorun;
 }
 
 export async function stop() {

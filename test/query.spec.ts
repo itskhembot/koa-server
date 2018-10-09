@@ -9,15 +9,17 @@ const port = 3000;
 
 
 describe('Query', () => {
+
   beforeEach(async () => {
     superserver = supertest(await start(port));
   });
+
   describe('Account', () => {
     it('Query.account(id: ID)', async () => {
       describe('Query existing account', () => {
         it('account should exist', async () => {
           const accountId = 'acc_01770e44-b3eb-4351-8a2f-8f1ed45097db';
-          const body = await superserver.post('/graphql').send({
+          const response = await superserver.post('/graphql').send({
             query: `
             query($id: ID!)  {
               account(id: $id) {
@@ -31,19 +33,20 @@ describe('Query', () => {
               id: accountId,
             },
           });
-          expect(body.data.account).to.not.be.null;
-          expect(body.data.account).has.property('id');
-          expect(body.data.account)
+          expect(response.body.data.account).to.not.be.null;
+          expect(response.body.data.account).has.property('id');
+          expect(response.body.data.account)
             .has.property('id')
             .equal('acc_01770e44-b3eb-4351-8a2f-8f1ed45097db');
-          expect(body.data.account).has.property('balance');
-          expect(body.data.account).has.property('availablebalance');
+          expect(response.body.data.account).has.property('balance');
+          expect(response.body.data.account).has.property('availableBalance');
         });
       });
+
       describe('Query non existing account', () => {
         it('account should not exist', async () => {
           const accountId = 'acc_01770e44-b3eb-4351-8a2f-8x1xx45097xx';
-          const body = await superserver.post('/graphql').send({
+          const response = await superserver.post('/graphql').send({
             query: `
             query($id: ID!)  {
               account(id: $id) {
@@ -57,12 +60,14 @@ describe('Query', () => {
               id: accountId,
             },
           });
-          expect(body.data.account).to.be.null;
+          expect(response.body.data.account).to.be.null;
         });
       });
     });
   });
+
   afterEach(async () => {
     await stop();
   });
+  
 });
