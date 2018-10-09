@@ -12,10 +12,10 @@ describe('Mutation', () => {
     superserver = supertest(await start(3000));
   });
   describe('Account', () => {
-    const request = uuid();
-    const accountId = 'acc_01770e44-b3eb-4351-8a2f-8f1ed45097db';
-    let amount = 30;
     it('Mutation.updateBalance(request: ID!, account: ID!, amount: Float!)', async () => {
+      const request = uuid();
+      const accountId = 'acc_01770e44-b3eb-4351-8a2f-8f1ed45097db';
+      let amount = 30;
       describe('Update balance of existing account', () => {
         it('account should be updated', async () => {
           const account = (await AccountModel.findOne({
@@ -41,7 +41,7 @@ describe('Mutation', () => {
         });
       });
 
-      describe('Query account w/ same request ID', () => {
+      describe('Update account w/ same request ID', () => {
         it('account should return same data & not affect balance', async () => {
           amount = -50;
           const account = await AccountModel.findOne({
