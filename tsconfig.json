@@ -18,7 +18,7 @@
     "noUnusedParameters": false,
     "moduleResolution": "node",
     "esModuleInterop": true,
-    "lib": ["es2017", "esnext"]
+    "lib": ["es2017", "esnext", "dom"]
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "test/**/*"]
 }

@@ -19,12 +19,16 @@
     "sequelize": "^4.39.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.6",
     "@types/graphql": "^14.0.1",
     "@types/koa": "^2.0.46",
     "@types/mocha": "^5.2.5",
     "@types/sequelize": "^4.27.27",
+    "@types/supertest": "^2.0.6",
+    "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "supertest": "^3.3.0",
+    "ts-node": "^7.0.1",
     "typescript": "^3.1.1"
   }
 }
