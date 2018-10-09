@@ -129,7 +129,6 @@ describe('Query', () => {
     });
   });
 
-
   describe('ReservedBalances', () => {
     it('Query.reservedBalances(id: ID!)', async () => {
       describe('Query existing reservedBalances', () => {
@@ -151,7 +150,6 @@ describe('Query', () => {
               account: accountId,
             },
           });
-          console.log(response.body.data.reservedBalances);
           expect(response.body.data.reservedBalances).to.not.be.null;
           expect(response.body.data.reservedBalances).is.deep.equals(reservedBalances);
         });
@@ -240,7 +238,6 @@ describe('Query', () => {
     });
   });
 
-
   describe('VirtualBalances', () => {
     it('Query.virtualBalances(id: ID!)', async () => {
       describe('Query existing virtualBalances', () => {
@@ -262,7 +259,6 @@ describe('Query', () => {
               account: accountId,
             },
           });
-          console.log(response.body.data.virtualBalances);
           expect(response.body.data.virtualBalances).to.not.be.null;
           expect(response.body.data.virtualBalances).is.deep.equals(virtualBalances);
         });
@@ -292,9 +288,9 @@ describe('Query', () => {
     });
   });
 
-
   afterEach(async () => {
     await stop();
   });
+
 });
   
