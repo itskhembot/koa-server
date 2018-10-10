@@ -1,8 +1,8 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import { describe, beforeEach, it, afterEach } from 'mocha';
-import { start, stop } from '../../src';
-import AccountModel from '../../src/models/account';
+import { start, stop } from '../../../src';
+import AccountModel from '../../../src/models/account';
 
 let superserver: any;
 
