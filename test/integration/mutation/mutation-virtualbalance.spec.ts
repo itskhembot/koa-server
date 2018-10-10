@@ -1,6 +1,5 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
-import { describe, beforeEach, it, afterEach } from 'mocha';
 import { start, stop } from '../../../src';
 import VirtualBalanceModel from '../../../src/models/virtual-balance';
 import uuid from 'uuid';
