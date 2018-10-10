@@ -6,7 +6,7 @@
   "scripts": {
     "build": "tsc",
     "start": "node build/index.js",
-    "test": "mocha"
+    "test": "TS_NODE_PROJECT=tsconfig.json TS_NODE_FILES=true mocha ./test/{integration,unit}/**/*.spec.ts"
   },
   "license": "ISC",
   "dependencies": {
