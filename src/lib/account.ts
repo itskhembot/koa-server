@@ -4,7 +4,7 @@ import sequelize from './sequelize';
   export async function updateBalanceTable(obj: any, args: { request: string, account: string, amount: number }) {
     try {
       const [, [account]] = await AccountModel.update({
-          balance: [[sequelize.fn('SUM', sequelize.col('balance')), args.amount]]
+          balance: sequelize.literal(`balance + ${args.amount}`)
         }, { where: { id: args.account } ,
         returning: true,}) as any;
 
