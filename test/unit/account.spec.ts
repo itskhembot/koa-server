@@ -24,7 +24,7 @@ describe('Account', () => {
         amount: Math.random() * (500 - 5) + 5,
       };
 
-      it('should return arguments', async () => {
+      it('should validate update', async () => {
         const response = await updateBalanceTable(null, args);
         expect(response).is.not.null;
         expect(fakeUpdate.calledOnce).to.be.true;
