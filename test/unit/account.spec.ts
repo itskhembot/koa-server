@@ -9,9 +9,9 @@ chai.use(chaiAsPromised);
 describe('Account', () => {
   describe('updateBalance', () => {
     describe('Given arguments', () => {
-      // const balance = 100;
+      const balance = 100;
       const fakeUpdate = sinon.fake(async (obj: any, args: any) => {
-        return {};
+        return [null,[balance + args.amount]];
       });
       const fakeModel = { update: fakeUpdate };
       const { updateBalanceTable } = proxyquire('../../src/lib/account', {
@@ -26,9 +26,8 @@ describe('Account', () => {
 
       it('should return arguments', async () => {
         const response = await updateBalanceTable(null, args);
-        console.log(response);
         expect(response).is.not.null;
-        // expect(fakeUpdate.calledOnce).to.be.true;
+        expect(fakeUpdate.calledOnce).to.be.true;
       });
     });
   });
