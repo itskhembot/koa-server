@@ -1,0 +1,35 @@
+version: '3.2'
+services:
+  postgres:
+    image: postgres:10.4
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=balance3
+    ports:
+      - 5432:5432
+    networks:
+      local:
+        aliases:
+          - postgres
+  rabbit:
+    image: rabbitmq:3.6-alpine
+    ports:
+      - 5672:5672
+    networks:
+      local:
+        aliases:
+          - rabbit
+  eventstore:
+    image: 498457837717.dkr.ecr.ap-southeast-1.amazonaws.com/onewallet-eventstore:137
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=balance3
+      - POSTGRES_HOST=postgres
+      - RABBITMQ_URI=amqp://rabbit
+    networks:
+      local:
+    depends_on:
+      - postgres
+      - rabbit
+networks:
+  local:
