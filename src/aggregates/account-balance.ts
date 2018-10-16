@@ -10,14 +10,11 @@ import {
 import AppError from 'onewallet.library.error';
 import R from 'ramda';
 
-import { updateBalanceTable } from '../lib/account';
-import RequestModel from '../models/request';
+import * as Account from '../client/account';
 
 type State = {
-  request: ID;
-  account: ID;
-  amount: Number;
-} | null;
+  amount: number;
+};
 
 export default class AccountBalance extends Aggregate<State> {
   constructor(
@@ -30,8 +27,8 @@ export default class AccountBalance extends Aggregate<State> {
 
   apply(state: State, event: Event) {
     switch (event.type) {
-      case 'UpdateBalance': {
-        return event.body as State;
+      case 'BalanceUpdated': {
+        return {amount: this.state.amount + event.body.amount};
       }
     }
 
@@ -43,48 +40,26 @@ export default class AccountBalance extends Aggregate<State> {
   }
 
   static get InitialState() {
-    return null;
+    return { amount: 0 };
   }
 
-  async updateBalance(obj: any, args: { request: string, account: string, amount: number }): Promise<void> {
+  async updateBalance(account: ID, amount: number): Promise<void> {
     await this.fold();
-    const nextEvent = this.nextEvent('UpdateBalance');
+    const nextEvent = this.nextEvent('BalanceUpdated');
 
-    const request = (await RequestModel.findOne({
-      where: { id: args.request },
-    })) as any;
+    const balance = await Account.retrieveBalance(account);
+    const calculatedBalance = balance + amount;
 
-    let result;
-    let error;
-    if (request) {
-      if(request.result) {
-        result = request.result;
-      }
-      if(request.error){
-        error = request.error;
-        throw new AppError('REQUEST_ALREADY_EXISTS', 'Error Result', {
-          error,
-        });
-      }
-    }
-    else{
-      try {
-        result = await updateBalanceTable(null, args);
-      } catch (err) {
-        error = err;
-        result = err;
-      }
-      await RequestModel.create({
-        id: args.request,
-        result,
-        error,
+    if(calculatedBalance < 0){
+      throw new AppError('INSUFFICIENT_BALANCE', 'Updated balance amount results in negative amount', {
+        calculatedBalance,
       });
     }
 
     try {
       await this.eventStore.createEvent(
         nextEvent({
-          result
+          amount
         })
       );
     } catch (err) {
