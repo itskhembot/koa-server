@@ -28,7 +28,8 @@ export default class AccountBalance extends Aggregate<State> {
   apply(state: State, event: Event) {
     switch (event.type) {
       case 'BalanceUpdated': {
-        return {amount: this.state.amount + event.body.amount};
+        const params = event.body as any;
+        return {amount: this.state.amount + params.amount};
       }
     }
 
