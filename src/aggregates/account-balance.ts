@@ -13,7 +13,7 @@ type State = {
   balance: number;
 };
 
-export default class AccountBalance extends Aggregate<State> {
+export default class AccountBalanceAggregate extends Aggregate<State> {
   constructor(
     instance: AggregateInstance<State>,
     eventStore: EventStore,

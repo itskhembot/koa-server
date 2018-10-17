@@ -1,0 +1,74 @@
+import { AggregateType } from 'onewallet.library.framework';
+import { AccountBalanceAggregate } from '../../src/aggregates';
+import createFakeAggregateInstance from '../helper/create-fake-aggregate-instance';
+import createFakeEventStore from '../helper/create-fake-event-store';
+
+import chai, { expect } from 'chai';
+import chaiAsPromised from 'chai-as-promised';
+import { v4 as uuid } from 'uuid';
+
+chai.use(chaiAsPromised);
+
+describe('aggregates', () => {
+  describe('AccountBalance Aggregates', () => {
+    describe('Type', () => {
+      it('should return the correct type', () => {
+        expect(AccountBalanceAggregate.Type).to.equal(
+          AggregateType.AccountBalance
+        );
+      });
+    });
+
+    describe('InitialState', () => {
+      it('should return the correct initial state', () => {
+        expect(AccountBalanceAggregate.InitialState).has.property('amount', 0);
+      });
+    });
+
+    describe('constructor', () => {
+      const aggregate = new AccountBalanceAggregate(
+        createFakeAggregateInstance({ type: AggregateType.AccountBalance }),
+        {} as any,
+        {} as any
+      );
+
+      it('should set the correct properties', () => {
+        expect(aggregate).to.has.property('id').to.be.string;
+        expect(aggregate).to.has.property('state').to.be.null;
+        expect(aggregate)
+          .to.has.property('type')
+          .to.equal(AggregateType.AccountBalance);
+        expect(aggregate)
+          .to.has.property('version')
+          .to.equal(0);
+      });
+    });
+
+    describe('updateBalance', () => {
+      const fakeAggregateInstance = createFakeAggregateInstance({
+        id: `acc_${uuid()}`,
+        type: AggregateType.AccountBalance,
+      });
+      const fakeEventStore = createFakeEventStore([]);
+
+      const aggregate = new ProxiedSAGamingAccountAggregate(
+        fakeAggregateInstance,
+        fakeEventStore,
+        {} as any
+      );
+
+      it('should create SA Gaming account', async () => {
+        await aggregate.createAccount(320);
+
+        expect(aggregate).to.has.property('id').to.be.string;
+        expect(aggregate).to.has.property('state').to.be.null;
+        expect(aggregate)
+          .to.has.property('type')
+          .to.equal(AggregateType.AccountBalance);
+        expect(aggregate)
+          .to.has.property('version')
+          .to.equal(0);
+      });
+    });
+  });
+});
