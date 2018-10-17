@@ -68,7 +68,7 @@ describe('aggregates', () => {
         await aggregate.updateBalance(320);
 
         expect(aggregate).to.has.property('id').to.be.string;
-        expect(aggregate).to.has.property('state').to.be.null;
+        expect(aggregate).to.has.property('state').to.have.property('balance',50);
         expect(aggregate)
           .to.has.property('type')
           .to.equal(AggregateType.AccountBalance);
