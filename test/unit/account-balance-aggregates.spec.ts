@@ -2,6 +2,7 @@ import { AggregateType } from 'onewallet.library.framework';
 import { AccountBalanceAggregate } from '../../src/aggregates';
 import createFakeAggregateInstance from '../helper/create-fake-aggregate-instance';
 import createFakeEventStore from '../helper/create-fake-event-store';
+import AccountError from '../../src/lib/error/account-error';
 
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
@@ -56,7 +57,13 @@ describe('aggregates', () => {
         fakeEventStore,
         {} as any
       );
-      
+
+      it('should return error', async () => {
+        await aggregate.updateBalance(-70);
+        expect(aggregate)
+          .to.be.an.instanceOf(AccountError).with.property('message', 'Updated balance amount results in negative amount');
+      });
+
       it('should update balance', async () => {
         await aggregate.updateBalance(320);
 
