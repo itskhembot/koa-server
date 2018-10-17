@@ -48,17 +48,17 @@ describe('aggregates', () => {
       const fakeAggregateInstance = createFakeAggregateInstance({
         id: `acc_${uuid()}`,
         type: AggregateType.AccountBalance,
+        state: { balance: 50 },
       });
       const fakeEventStore = createFakeEventStore([]);
-
-      const aggregate = new ProxiedSAGamingAccountAggregate(
+      const aggregate = new AccountBalanceAggregate(
         fakeAggregateInstance,
         fakeEventStore,
         {} as any
       );
-
-      it('should create SA Gaming account', async () => {
-        await aggregate.createAccount(320);
+      
+      it('should update balance', async () => {
+        await aggregate.updateBalance(320);
 
         expect(aggregate).to.has.property('id').to.be.string;
         expect(aggregate).to.has.property('state').to.be.null;
