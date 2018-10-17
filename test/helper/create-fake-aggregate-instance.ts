@@ -8,7 +8,7 @@ export default function(params: {
   type: number;
 }): any {
   let state = null;
-  let version = 0;
+  let version = 100;
 
   const fakeReload = sinon.fake(() => Promise.resolve());
   const fakeUpdate = sinon.fake(async (values: any) => {
