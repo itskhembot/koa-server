@@ -16,14 +16,19 @@ export default function(initialEvents: Array<Event>): any {
       timestamp: Date.now(),
     });
   });
-
+  const fakeSubscribe = sinon.fake(async () => ({
+    on: () => {},
+    removeAllListeners: () => {},
+  }));
   return {
     retrieveEvents: fakeRetrieveEvents,
     createEvent: fakeCreateEvent,
+    subscribe: fakeSubscribe,
     reset: () => {
       events = R.clone(initialEvents);
       fakeRetrieveEvents.resetHistory();
       fakeCreateEvent.resetHistory();
+      fakeSubscribe.resetHistory();
     },
   };
 }
