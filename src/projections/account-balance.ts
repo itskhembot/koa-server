@@ -2,8 +2,7 @@ import { Projection, AggregateType, Event } from 'onewallet.library.framework';
 
 import eventStore from '../lib/event-store';
 import sequelize from '../lib/sequelize';
-import { idempotency } from '../lib/request';
-import { updateBalanceTable } from '../lib/account';
+import AccountModel from '../models/account';
 
 class AccountBalanceProjection extends Projection {
   constructor() {
@@ -13,14 +12,14 @@ class AccountBalanceProjection extends Projection {
     });
   }
 
-  async apply(event: Event<{ balance: number }>) {
+  async apply(event: Event<{ amount: number }>) {
     if (event.type === 'BalanceUpdated') {
-      updateBalance: async (
-        obj: any,
-        args: { request: string; account: string; amount: number }
-      ) => {
-        return idempotency(args, updateBalanceTable);
-      };
+      await AccountModel.update(
+        {
+          balance: event.body.amount,
+        },
+        { where: { id: event.aggregate.id } }
+      );
     }
   }
 }
