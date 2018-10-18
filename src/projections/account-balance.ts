@@ -13,7 +13,7 @@ class AccountBalanceProjection extends Projection {
     });
   }
 
-  async apply(event: Event<{ account: string; username: string }>) {
+  async apply(event: Event<{ balance: number }>) {
     if (event.type === 'BalanceUpdated') {
       updateBalance: async (
         obj: any,
