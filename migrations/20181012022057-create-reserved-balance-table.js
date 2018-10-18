@@ -10,6 +10,8 @@ module.exports = {
       account: {
         type: Sequelize.STRING,
         allowNull: false,
+        references: 'Account',
+        referencesKey: 'id',
       },
       context: {
         type: Sequelize.STRING,
