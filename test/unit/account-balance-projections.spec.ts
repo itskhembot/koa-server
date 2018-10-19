@@ -12,9 +12,11 @@ describe('projections', () => {
   describe('AccountBalance Projections', () => {
     describe('updateBalance', () => {
       const fakeFindById = sinon.fake(() => Promise.resolve(null));
-      const fakeUpdate = sinon.fake(async () => {});
+      const fakeUpdate = sinon.fake(() => {});
+      const fakeLiteral = sinon.fake(() => '');
       const fakeModel = { update: fakeUpdate };
       const fakeSequelize = {
+        literal: fakeLiteral,
         define: () => {
           return {
             findById: fakeFindById,
@@ -28,7 +30,10 @@ describe('projections', () => {
         {
           '../lib/event-store': {
             default: createFakeEventStore([
-              createFakeEvent({ type: 'BalanceUpdated', body: { amount: 50 } }),
+              createFakeEvent({
+                type: 'BalanceUpdated',
+                body: { amount: 50 },
+              }),
             ]),
           },
           '../lib/sequelize': { default: fakeSequelize },
@@ -36,7 +41,7 @@ describe('projections', () => {
         }
       );
 
-      it('should call  balance', async () => {
+      it('should call update', async () => {
         const projection = new AccountBalanceProjection();
         await projection.initialized;
         await projection.queue.onEmpty();
