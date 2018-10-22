@@ -38,7 +38,7 @@ export default class AccountBalanceAggregate extends Aggregate<State> {
   }
 
   static get InitialState() {
-    return { amount: 0 };
+    return { balance: 0 };
   }
 
   async updateBalance(amount: number): Promise<void> {
