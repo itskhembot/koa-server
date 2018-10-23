@@ -10,15 +10,14 @@ import AppError from 'onewallet.library.error';
 import R from 'ramda';
 
 import { AccountBalanceAggregate } from '../../src/aggregates';
-import libEventStore from '../lib/event-store';
-import sequelize from '../lib/sequelize';
+import AggregateFactoryInstance from '../lib/aggregate-factory';
 
 type State = {
   balance: number;
   isReleased: boolean;
 } | null;
 
-export default class CreateReservedBalanceAggregate extends Aggregate<State> {
+export default class ReservedBalanceAggregate extends Aggregate<State> {
   constructor(
     instance: AggregateInstance<State>,
     eventStore: EventStore,
@@ -46,7 +45,7 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
     return null;
   }
 
-  async createReservedBalance(
+  async create(
     account: string,
     context: string,
     amount: number
@@ -56,29 +55,30 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
 
     if (this.state) {
       throw new AppError(
-        'RESERVED_BALANCE_ALREADY_EXISTS',
+        'RESERVED_BALANCE_EXISTS',
         `Reserved Balance already exists`,
         {
           account,
         }
       );
     }
-    const aggregateFactory = new AggregateFactory(libEventStore, sequelize);
-    const accountAggregate = await aggregateFactory.findOrCreateAggregate(
+
+    const accountAggregate = (await AggregateFactoryInstance.findOrCreateAggregate(
       AccountBalanceAggregate,
       account
-    );
+    )) as AccountBalanceAggregate;
     accountAggregate.fold();
     const accountBalance = accountAggregate.state.balance;
     if (amount > accountBalance) {
       throw new AppError(
-        'INSUFFICIENT_ACCOUNT_BALANCE_TO_RESERVE',
+        'INSUFFICIENT_BALANCE',
         `Insufficient balance in account, reserved amount is greater than balance!`,
         {
           account,
         }
       );
     }
+    accountAggregate.updateBalance(-Math.abs(amount));
     try {
       await this.eventStore.createEvent(
         nextEvent({
@@ -89,7 +89,8 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        return this.createReservedBalance(account, context, amount);
+        accountAggregate.updateBalance(amount);
+        return this.create(account, context, amount);
       }
 
       throw err;

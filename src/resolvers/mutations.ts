@@ -1,7 +1,5 @@
-import { AggregateFactory } from 'onewallet.library.framework';
-
+import AggregateFactory from '../lib/aggregate-factory';
 import { AccountBalanceAggregate } from '../../src/aggregates';
-import EventStore from '../lib/event-store';
 import { idempotency } from '../lib/request';
 import {
   createReserved,
@@ -14,8 +12,6 @@ import {
   cancelVirtual,
   commitVirtual,
 } from '../lib/virtual-balance';
-
-import sequelize from '../lib/sequelize';
 
 export default {
   updateBalance: async (
@@ -56,11 +52,11 @@ async function updateBalanceTable(
   obj: any,
   args: { request: string; account: string; amount: number }
 ) {
-  const aggregateFactory = new AggregateFactory(EventStore, sequelize);
-  const aggregate = await aggregateFactory.findOrCreateAggregate(
+  const aggregate = (await AggregateFactory.findOrCreateAggregate(
     AccountBalanceAggregate,
     args.account
-  );
+  )) as AccountBalanceAggregate;
   aggregate.fold();
+  aggregate.updateBalance(args.amount);
   return aggregate.state.balance;
 }
