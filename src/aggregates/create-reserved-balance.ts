@@ -1,5 +1,4 @@
 import {
-  ID,
   Aggregate,
   Event,
   AggregateInstance,
@@ -10,15 +9,14 @@ import {
 import AppError from 'onewallet.library.error';
 import R from 'ramda';
 
-import ReservedBalanceModel from '../models/reserved-balance';
+import { AccountBalanceAggregate } from '../../src/aggregates';
+import libEventStore from '../lib/event-store';
+import sequelize from '../lib/sequelize';
 
 type State = {
-  id: ID;
-  account: string;
-  context: string;
   balance: number;
   isReleased: boolean;
-};
+} | null;
 
 export default class CreateReservedBalanceAggregate extends Aggregate<State> {
   constructor(
@@ -32,7 +30,8 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
   apply(state: State, event: Event) {
     switch (event.type) {
       case 'ReservedBalanceCreated': {
-        return event.body as State;
+        const params = event.body as any;
+        return { balance: params.amount, isReleased: false };
       }
     }
 
@@ -44,55 +43,44 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
   }
 
   static get InitialState() {
-    return {
-      id: null,
-      account: null,
-      context: null,
-      balance: 0,
-      isReleased: false,
-    };
+    return null;
   }
 
   async createReservedBalance(
-    id: ID,
     account: string,
-    context: string
+    context: string,
+    amount: number
   ): Promise<void> {
     await this.fold();
     const nextEvent = this.nextEvent('ReservedBalanceCreated');
+
     if (this.state) {
       throw new AppError(
-        'RESERVED_BALANCE_EXISTS',
-        'Reserved Balance already exists',
+        'RESERVED_BALANCE_ALREADY_EXISTS',
+        `Reserved Balance already exists`,
         {
-          id,
+          account,
         }
       );
     }
-    const reservedBalance = await ReservedBalanceModel.findOne({
-      where: { account, context },
-    });
-    if (reservedBalance) {
-      throw new AppError(
-        'RESERVED_BALANCE_CONSTRAINT_EXISTS',
-        `Account - Context combination already exists ${account}, ${context}`,
-        {
-          id,
-        }
-      );
-    }
+    const aggregateFactory = new AggregateFactory(libEventStore, sequelize);
+    const aggregate = await aggregateFactory.findOrCreateAggregate(
+      AccountBalanceAggregate,
+      account
+    );
+    aggregate.fold();
 
     try {
       await this.eventStore.createEvent(
         nextEvent({
-          id,
           account,
           context,
+          amount,
         })
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        return this.createReservedBalance(id, account, context);
+        return this.createReservedBalance(account, context, amount);
       }
 
       throw err;

@@ -1,7 +1,4 @@
-import {
-  AggregateFactory,
-  AggregateInstance,
-} from 'onewallet.library.framework';
+import { AggregateFactory } from 'onewallet.library.framework';
 
 import { AccountBalanceAggregate } from '../../src/aggregates';
 import EventStore from '../lib/event-store';
