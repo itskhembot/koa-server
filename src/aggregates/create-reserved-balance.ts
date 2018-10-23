@@ -64,12 +64,21 @@ export default class CreateReservedBalanceAggregate extends Aggregate<State> {
       );
     }
     const aggregateFactory = new AggregateFactory(libEventStore, sequelize);
-    const aggregate = await aggregateFactory.findOrCreateAggregate(
+    const accountAggregate = await aggregateFactory.findOrCreateAggregate(
       AccountBalanceAggregate,
       account
     );
-    aggregate.fold();
-
+    accountAggregate.fold();
+    const accountBalance = accountAggregate.state.balance;
+    if (amount > accountBalance) {
+      throw new AppError(
+        'INSUFFICIENT_ACCOUNT_BALANCE_TO_RESERVE',
+        `Insufficient balance in account, reserved amount is greater than balance!`,
+        {
+          account,
+        }
+      );
+    }
     try {
       await this.eventStore.createEvent(
         nextEvent({
