@@ -34,11 +34,16 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       }
       case 'ReservedBalanceUpdated': {
         const params = event.body as any;
-        return { balance: params.amount, isReleased: false };
+        if (this.state)
+          return {
+            ...state,
+            balance: this.state.balance + params.amount,
+            isReleased: false,
+          };
       }
       case 'ReservedBalanceReleased': {
-        const params = event.body as any;
-        return { balance: params.amount, isReleased: true };
+        if (this.state)
+          return { ...state, balance: this.state.balance, isReleased: true };
       }
     }
 
@@ -75,8 +80,8 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       AccountBalanceAggregate,
       account
     )) as AccountBalanceAggregate;
-    accountAggregate.fold();
-    const accountBalance = accountAggregate.state.balance;
+    await accountAggregate.fold();
+    const accountBalance = await accountAggregate.state.balance;
     if (amount > accountBalance) {
       throw new AppError(
         'INSUFFICIENT_BALANCE',
@@ -86,7 +91,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
         }
       );
     }
-    accountAggregate.updateBalance(-Math.abs(amount));
+    accountAggregate.updateBalance(-amount);
     try {
       await this.eventStore.createEvent(
         nextEvent({
@@ -112,24 +117,28 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
   ): Promise<void> {
     await this.fold();
     const nextEvent = this.nextEvent('ReservedBalanceUpdated');
-
-    const accountAggregate = (await AggregateFactoryInstance.findOrCreateAggregate(
-      AccountBalanceAggregate,
-      account
-    )) as AccountBalanceAggregate;
-    accountAggregate.fold();
-    const accountBalance = accountAggregate.state.balance;
-    if (amount > accountBalance) {
+    if (!this.state) {
       throw new AppError(
-        'INSUFFICIENT_BALANCE',
-        `Insufficient balance in account, reserved amount is greater than balance!`,
+        'RESERVED_BALANCED_NON-EXISTING',
+        `Reserved balance does not exists!`,
+        {
+          account,
+        }
+      );
+    }
+    const balance = await this.state.balance;
+    const calculatedBalance = balance + amount;
+
+    if (calculatedBalance < 0) {
+      throw new AppError(
+        'INSUFFICIENT_RESERVED_BALANCE',
+        `Insufficient reserve balance in account, new amount is greater than existing balance!`,
         {
           account,
         }
       );
     }
 
-    accountAggregate.updateBalance(-Math.abs(amount));
     try {
       await this.eventStore.createEvent(
         nextEvent({
@@ -140,7 +149,6 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        accountAggregate.updateBalance(amount);
         return this.update(account, context, amount);
       }
 
@@ -156,21 +164,26 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       AccountBalanceAggregate,
       account
     )) as AccountBalanceAggregate;
-    accountAggregate.fold();
-    let amount;
-    if (this.state) {
-      if (this.state.isReleased) {
-        throw new AppError(
-          'RESERVED_BALANCED_RELEASED',
-          `Reserved balance entity already been released!`,
-          {
-            account,
-          }
-        );
-      }
-      amount = (await this.state.balance) as any;
+    await accountAggregate.fold();
+    if (!this.state) {
+      throw new AppError(
+        'RESERVED_BALANCED_NON-EXISTING',
+        `Reserved balance does not exists!`,
+        {
+          account,
+        }
+      );
     }
-
+    if (this.state.isReleased) {
+      throw new AppError(
+        'RESERVED_BALANCED_RELEASED',
+        `Reserved balance entity already been released!`,
+        {
+          account,
+        }
+      );
+    }
+    const amount = (await this.state.balance) as any;
     accountAggregate.updateBalance(amount);
     try {
       await this.eventStore.createEvent(
@@ -182,7 +195,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        accountAggregate.updateBalance(-Math.abs(amount));
+        accountAggregate.updateBalance(-amount);
         return this.release(account, context);
       }
 
