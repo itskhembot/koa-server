@@ -9,7 +9,7 @@ import {
 import AppError from 'onewallet.library.error';
 import R from 'ramda';
 
-import { AccountBalanceAggregate } from '../../src/aggregates';
+import { AccountBalanceAggregate } from '.';
 import AggregateFactoryInstance from '../lib/aggregate-factory';
 
 type State = {
