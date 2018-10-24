@@ -1,5 +1,6 @@
 import { AggregateType } from 'onewallet.library.framework';
 import { ReservedBalanceAggregate } from '../../src/aggregates';
+import { AccountBalanceAggregate } from '../../src/aggregates';
 import createFakeAggregateInstance from '../helper/create-fake-aggregate-instance';
 import createFakeEventStore from '../helper/create-fake-event-store';
 import createFakeAggregateFactory from '../helper/create-fake-aggregate-factory';
@@ -8,8 +9,6 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { v4 as uuid } from 'uuid';
 import casual from 'casual';
-import sinon from 'sinon';
-import proxyquire from 'proxyquire';
 
 chai.use(chaiAsPromised);
 
@@ -64,39 +63,21 @@ describe('aggregates', () => {
           fakeEventStore,
           {} as any
         );
-        const fakeFindById = sinon.fake(() => Promise.resolve(null));
-        const fakeSequelize = {
-          define: () => {
-            return {
-              findById: fakeFindById,
-              upsert: () => Promise.resolve(),
-              sync: () => Promise.resolve(),
-            };
+        const fakeAccountAggregateInstance = createFakeAggregateInstance({
+          id: `acc_${uuid()}`,
+          type: AggregateType.ReservedBalance,
+          state: {
+            balance: 500,
           },
-        } as any;
-        const fakeFold = sinon.fake(() => Promise.resolve());
-        const fakeUpdateBalance = sinon.fake(async (amount: any) => {
-          const balance = this.state.balance;
-          return balance + amount;
         });
-        const fakeAccountBalanceAggregate = {
-          fold: fakeFold,
-          updateBalance: fakeUpdateBalance,
-        };
-        const { accountBalanceAggregate } = proxyquire(
-          '../../src/aggregates/reserved-balance',
-          {
-            '../lib/aggregate-factory': {
-              default: createFakeAggregateFactory(
-                fakeEventStore,
-                fakeSequelize
-              ),
-            },
-            '.': {
-              default: fakeAccountBalanceAggregate,
-            },
-          }
+        const fakeAggregateFactory = createFakeAggregateFactory();
+        const accountBalanceAggregate = new AccountBalanceAggregate(
+          fakeAccountAggregateInstance,
+          fakeEventStore,
+          fakeAggregateFactory
         );
+        const accountBalance = accountBalanceAggregate;
+        console.log(accountBalance);
       });
       it('should return error', async () => {
         try {

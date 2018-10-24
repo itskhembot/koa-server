@@ -1,19 +1,13 @@
 import AggregateType from 'onewallet.library.framework';
 import sinon from 'sinon';
+import { v4 as uuid } from 'uuid';
 
-export default function(eventStore: any, sequelize: any): any {
-  const fakeFindOrCreateAggregate = sinon.fake(
-    async (aggregateClass: any, account: string) => {
-      return {
-        state: { balance: 500 },
-        version: 101,
-        id: account,
-        type: AggregateType,
-        toJSON: {},
-      };
-    }
-  );
+export default function(): any {
+  const fakeFindOrCreateAggregate = sinon.fake(() => Promise.resolve());
   return {
+    id: uuid(),
+    type: AggregateType,
+    toJSON: {},
     findOrCreateAggregate: fakeFindOrCreateAggregate,
     reset: () => {
       fakeFindOrCreateAggregate.resetHistory();
