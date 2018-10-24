@@ -159,6 +159,15 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
     accountAggregate.fold();
     let amount;
     if (this.state) {
+      if (this.state.isReleased) {
+        throw new AppError(
+          'RESERVED_BALANCED_RELEASED',
+          `Reserved balance entity already been released!`,
+          {
+            account,
+          }
+        );
+      }
       amount = (await this.state.balance) as any;
     }
 
