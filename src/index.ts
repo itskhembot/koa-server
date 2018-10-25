@@ -4,6 +4,7 @@ import types from './types/types';
 import resolvers from './resolvers';
 
 import AccountBalanceProjection from '../src/projections/account-balance';
+import ReservedBalanceProjection from '../src/projections/reserved-balance';
 
 const app = new Koa();
 const server = new ApolloServer({
@@ -20,6 +21,7 @@ let apollorun: any;
 export async function start(port: number) {
   apollorun = app.listen(port);
   await AccountBalanceProjection.initialized;
+  await ReservedBalanceProjection.initialized;
   return apollorun;
 }
 
