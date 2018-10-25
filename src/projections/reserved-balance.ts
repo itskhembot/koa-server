@@ -28,13 +28,11 @@ class ReservedBalanceProjection extends Projection {
     if (event.type === 'ReservedBalanceUpdated') {
       await ReservedBalanceModel.update(
         {
-          balance: event.body.amount,
+          balance: sequelize.literal(`balance + ${event.body.amount}`),
         },
         {
           where: {
             id: event.aggregate.id,
-            account: event.body.account,
-            context: event.body.context,
           },
         }
       );
@@ -47,8 +45,6 @@ class ReservedBalanceProjection extends Projection {
         {
           where: {
             id: event.aggregate.id,
-            account: event.body.account,
-            context: event.body.context,
           },
         }
       );
