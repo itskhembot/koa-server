@@ -4,7 +4,7 @@ import eventStore from '../lib/event-store';
 import sequelize from '../lib/sequelize';
 import AccountModel from '../models/account';
 
-class SAGamingAccountProjection extends Projection {
+class AccountBalanceProjection extends Projection {
   constructor() {
     super(eventStore, sequelize, {
       id: 'AccountBalance',
@@ -23,4 +23,4 @@ class SAGamingAccountProjection extends Projection {
     }
   }
 }
-export default new SAGamingAccountProjection();
+export default new AccountBalanceProjection();
