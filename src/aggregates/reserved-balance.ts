@@ -34,19 +34,19 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       }
       case 'ReservedBalanceUpdated': {
         const params = event.body as any;
-        if (this.state)
+        if (state) {
           return {
             ...state,
-            balance: this.state.balance + params.amount,
-            isReleased: false,
+            balance: state.balance + params.amount,
           };
+        }
       }
       case 'ReservedBalanceReleased': {
-        if (this.state)
-          return { ...state, balance: this.state.balance, isReleased: true };
+        if (state) {
+          return { ...state, isReleased: true };
+        }
       }
     }
-
     return R.clone(state);
   }
 
@@ -91,7 +91,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
         }
       );
     }
-    accountAggregate.updateBalance(-amount);
+    await accountAggregate.updateBalance(-amount);
     try {
       await this.eventStore.createEvent(
         nextEvent({
@@ -102,7 +102,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        accountAggregate.updateBalance(amount);
+        await accountAggregate.updateBalance(amount);
         return this.create(account, context, amount);
       }
 
@@ -184,7 +184,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       );
     }
     const amount = (await this.state.balance) as any;
-    accountAggregate.updateBalance(amount);
+    await accountAggregate.updateBalance(amount);
     try {
       await this.eventStore.createEvent(
         nextEvent({
@@ -195,7 +195,7 @@ export default class ReservedBalanceAggregate extends Aggregate<State> {
       );
     } catch (err) {
       if (err.code === 'EVENT_VERSION_EXISTS') {
-        accountAggregate.updateBalance(-amount);
+        await accountAggregate.updateBalance(-amount);
         return this.release(account, context);
       }
 
