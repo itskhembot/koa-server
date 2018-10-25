@@ -9,6 +9,7 @@ import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import { v4 as uuid } from 'uuid';
 import casual from 'casual';
+// import proxyquire from 'proxyquire';
 
 chai.use(chaiAsPromised);
 
@@ -70,14 +71,14 @@ describe('aggregates', () => {
             balance: 500,
           },
         });
-        const fakeAggregateFactory = createFakeAggregateFactory();
+        const fakeAggregateFactory = await createFakeAggregateFactory();
+        const bal = fakeAggregateFactory.findOrCreateAggregate();
         const accountBalanceAggregate = new AccountBalanceAggregate(
           fakeAccountAggregateInstance,
           fakeEventStore,
           fakeAggregateFactory
         );
         const accountBalance = accountBalanceAggregate;
-        console.log(accountBalance);
       });
       it('should return error', async () => {
         try {
