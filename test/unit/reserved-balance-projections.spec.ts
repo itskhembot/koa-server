@@ -37,7 +37,13 @@ describe('projections', () => {
         };
       },
     } as any;
+    beforeEach(async () => {
+      fakeCreate.resetHistory();
+      fakeUpdate.resetHistory();
+    });
     describe('create', () => {
+      const account = `acc_${uuid()}`;
+      const context = casual.sentence;
       const { default: ReservedBalanceProjection } = proxyquire(
         '../../src/projections/reserved-balance',
         {
@@ -46,8 +52,8 @@ describe('projections', () => {
               createFakeEvent({
                 type: 'ReservedBalanceCreated',
                 body: {
-                  account: `acc_${uuid()}`,
-                  context: casual.sentence,
+                  account,
+                  context,
                   amount: 50,
                 },
               }),
@@ -62,9 +68,14 @@ describe('projections', () => {
         await projection.initialized;
         await projection.queue.onEmpty();
         expect(fakeCreate.calledOnce).to.be.true;
+        expect(fakeCreate.lastCall.lastArg).has.property('account', account);
+        expect(fakeCreate.lastCall.lastArg).has.property('context', context);
+        expect(fakeCreate.lastCall.lastArg).has.property('balance', 50);
       });
     });
     describe('update', () => {
+      const account = `acc_${uuid()}`;
+      const context = casual.sentence;
       const { default: ReservedBalanceProjection } = proxyquire(
         '../../src/projections/reserved-balance',
         {
@@ -73,8 +84,8 @@ describe('projections', () => {
               createFakeEvent({
                 type: 'ReservedBalanceUpdated',
                 body: {
-                  account: `acc_${uuid()}`,
-                  context: casual.sentence,
+                  account,
+                  context,
                   amount: 50,
                 },
               }),
@@ -115,7 +126,7 @@ describe('projections', () => {
         const projection = new ReservedBalanceProjection();
         await projection.initialized;
         await projection.queue.onEmpty();
-        expect(fakeUpdate.calledTwice).to.be.true;
+        expect(fakeUpdate.calledOnce).to.be.true;
       });
     });
   });
