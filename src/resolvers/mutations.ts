@@ -25,8 +25,8 @@ export default {
         AccountBalanceAggregate,
         args.account
       )) as AccountBalanceAggregate;
-      aggregate.fold();
-      aggregate.updateBalance(args.amount);
+      await aggregate.updateBalance(args.amount);
+      await aggregate.fold();
       return aggregate.state.balance;
     }),
   createReservedBalance: async (
@@ -46,8 +46,8 @@ export default {
         ReservedBalanceAggregate,
         args.account
       )) as ReservedBalanceAggregate;
-      aggregate.fold();
-      aggregate.create(args.account, args.context, args.amount);
+      await aggregate.create(args.account, args.context, args.amount);
+      await aggregate.fold();
       if (aggregate.state) {
         return {
           id: aggregate.id,
@@ -75,8 +75,8 @@ export default {
         ReservedBalanceAggregate,
         args.account
       )) as ReservedBalanceAggregate;
-      aggregate.fold();
-      aggregate.update(args.account, args.context, args.amount);
+      await aggregate.update(args.account, args.context, args.amount);
+      await aggregate.fold();
       if (aggregate.state) {
         return {
           id: aggregate.id,
@@ -104,8 +104,8 @@ export default {
         ReservedBalanceAggregate,
         args.account
       )) as ReservedBalanceAggregate;
-      aggregate.fold();
-      aggregate.release(args.account, args.context);
+      await aggregate.release(args.account, args.context);
+      await aggregate.fold();
       if (aggregate.state) {
         return aggregate.state.isReleased;
       }
