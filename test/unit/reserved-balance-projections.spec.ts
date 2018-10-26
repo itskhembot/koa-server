@@ -25,8 +25,11 @@ describe('projections', () => {
       }
     );
     const fakeUpdate = sinon.fake(() => {});
-    const fakeLiteral = sinon.fake(() => {});
     const fakeModel = { create: fakeCreate, update: fakeUpdate };
+    const literalValue = Math.random() * (500 - 5) + 5;
+    const fakeLiteral = sinon.fake(() => {
+      return literalValue;
+    });
     const fakeSequelize = {
       literal: fakeLiteral,
       define: () => {
@@ -99,6 +102,8 @@ describe('projections', () => {
         const projection = new ReservedBalanceProjection();
         await projection.initialized;
         await projection.queue.onEmpty();
+        const updateArgs = fakeUpdate.lastCall.args[0];
+        expect(updateArgs).to.has.property('balance', literalValue);
         expect(fakeUpdate.calledOnce).to.be.true;
       });
     });
@@ -126,6 +131,8 @@ describe('projections', () => {
         const projection = new ReservedBalanceProjection();
         await projection.initialized;
         await projection.queue.onEmpty();
+        const updateArgs = fakeUpdate.lastCall.args[0];
+        expect(updateArgs).has.property('isReleased', true);
         expect(fakeUpdate.calledOnce).to.be.true;
       });
     });
