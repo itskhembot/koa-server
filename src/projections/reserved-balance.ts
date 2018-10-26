@@ -5,7 +5,7 @@ import sequelize from '../lib/sequelize';
 import ReservedBalanceModel from '../models/reserved-balance';
 import { v4 as uuid } from 'uuid';
 
-class ReservedBalanceProjection extends Projection {
+export default class ReservedBalanceProjection extends Projection {
   constructor() {
     super(eventStore, sequelize, {
       id: 'ReservedBalance',
@@ -51,4 +51,3 @@ class ReservedBalanceProjection extends Projection {
     }
   }
 }
-export default new ReservedBalanceProjection();
