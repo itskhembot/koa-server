@@ -20,8 +20,10 @@ let apollorun: any;
 
 export async function start(port: number) {
   apollorun = app.listen(port);
-  await AccountBalanceProjection.initialized;
-  await ReservedBalanceProjection.initialized;
+  const accountBalanceProjection = new AccountBalanceProjection();
+  const reservedBalanceProjection = new ReservedBalanceProjection();
+  await accountBalanceProjection.initialized;
+  await reservedBalanceProjection.initialized;
   return apollorun;
 }
 
